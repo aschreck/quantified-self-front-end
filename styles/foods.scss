@@ -1,0 +1,23 @@
+.food-form {
+  display: flex;
+  flex-direction: column;
+  width: 14%;
+}
+
+#food-btn{
+  width: 40%;
+}
+
+#table-container{
+  margin-top: 3%;
+}
+
+#food-table {
+  border-style: solid;
+}
+
+
+th {
+  border-style: solid;
+  background-color: blanchedalmond;
+}
