@@ -12,12 +12,44 @@
   margin-top: 3%;
 }
 
-#food-table {
-  border-style: solid;
+.row {
+  display: flex;
+  flex-direction: row;
 }
 
+.row-name {
+  width: 15%;
+}
 
-th {
-  border-style: solid;
-  background-color: blanchedalmond;
+.row-cals {
+  width: 6%;
+  text-align: center;
+}
+
+.row-name, .row-cals {
+  border: solid #000;
+  border-width:  1px;
+  padding: 4px;
+}
+
+#table-header {
+  display: flex;
+  flex-direction: row;
+  width: 15%;
+}
+
+#head-name {
+  width: 15%;
+}
+
+#head-cal {
+  width: 6%;
+}
+
+#head-name, #head-cal {
+  text-align: center;
+  border: solid #000;
+  border-width:  1px;
+  padding: 4px;
+  background-color: rgb(219, 219, 219);
 }
