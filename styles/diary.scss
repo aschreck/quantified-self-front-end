@@ -1,0 +1,29 @@
+#d-meals-container{
+  width: 100%;
+}
+
+.meal-row{
+  display: flex;
+  flex-direction: row;
+  height: 300px;
+}
+
+.meal {
+  width: 50%;
+}
+
+.d-head-name {
+  width: 22%;
+}
+
+.d-head-cals {
+  width: 15%;
+}
+
+.d-head-name, .d-head-cals {
+  text-align: center;
+  border: solid #000;
+  border-width:  1px;
+  padding: 4px;
+  background-color: rgb(219, 219, 219);
+}

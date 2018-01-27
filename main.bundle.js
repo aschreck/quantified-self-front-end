@@ -44,41 +44,43 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	(function webpackMissingModule() { throw new Error("Cannot find module \"build\""); }());
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
 
-	__webpack_require__(2);
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	__webpack_require__(1);
+	__webpack_require__(5);
 	var $;
-	$ = __webpack_require__(6);
+	$ = __webpack_require__(7);
+	var foodIds = {};
+
+	//Populate list with all stored foods on page load
 
 	$(document).ready(function () {
 	  fetch("https://quantified-self-api-data.herokuapp.com/api/v1/foods").then(function (response) {
 	    return response.json();
 	  }).then(function (data) {
-	    data.forEach(function (e) {
-	      $("#food-table").append("<tr>" + ('<td>' + e.name + '</td>') + ('<td>' + e.calories + '</td>') + "</tr>");
+	    data.forEach(function (food) {
+	      foodIds[food.name] = food.id;
+	      $("#food-table").prepend("<div class='row'>" + ('<div class="row-name" contentEditable=\'true\'>' + food.name + '</div>') + ('<div class="row-cals" contentEditable=\'true\'>' + food.calories + '</div>') + '<div><button>-</button></div>' + "</div>");
 	    });
 	  });
 	});
+
+	//Add new food
 
 	$("#food-btn").on("click", function (e) {
 	  e.preventDefault();
 	  var name = $("input[name='food-name']").val();
 	  var calories = $("input[name='food-cal']").val();
 	  var tableRef = document.getElementById('food-table').getElementsByTagName('tbody')[0];
+
 	  if (name === '') {
 	    alert("Please enter a food name.");
 	  } else if (calories === '') {
 	    alert("Please enter a calorie amount.");
 	  } else {
-	    $("#food-table").find('tbody').append("<tr>" + ('<td>' + name + '</td>') + ('<td>' + calories + '</td>') + "</tr>");
+	    $("#food-table").prepend("<div class='row'>" + ('<div class="row-name" contentEditable=\'true\'>' + name + '</div>') + ('<div class=\'row-cals\' contentEditable=\'true\'>' + calories + '</div>') + '<div><button>-</button></div>' + "</div>");
 	    $("input[name='food-name']").val('');
 	    $("input[name='food-cal']").val('');
 	  }
@@ -87,20 +89,81 @@
 	  fetch("https://quantified-self-api-data.herokuapp.com/api/v1/foods", {
 	    method: 'post',
 	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(newFood) });
+	    body: JSON.stringify(newFood) }).then(function (response) {
+	    return response.json();
+	  }).then(function (foodInfo) {
+	    foodIds[foodInfo.name] = foodInfo.id;
+	  });
+	});
+
+	//Delete Foods
+
+	$("#food-table").on("click", function (e) {
+	  var food = $(e.target).parent().parent()[0];
+	  var name = $(food).find("div.row-name").html();
+	  var foodId = foodIds[name];
+	  if ($(e.target).is(":button")) {
+	    $(e.target).closest(food).remove();
+	    fetch('https://quantified-self-api-data.herokuapp.com/api/v1/foods/' + foodId, {
+	      method: 'delete',
+	      headers: { 'Content-Type': 'application/json' }
+	    });
+	  }
+	});
+
+	//Edit foods
+
+	$('#food-table').on('focus', '[contenteditable]', function (e) {
+	  var beforeValue = $(this).html();
+	  var cellId = foodIds[beforeValue];
+	  var parent = $(this).parent()[0];
+	  var children = $(parent).find('TD');
+
+	  if (beforeValue = $(children[0]).html()) {
+	    $(this).data('inputType', "name");
+	    $(this).data('beforeCalories', $(children[1]).html());
+	  } else {
+	    $(this).data('inputType', "cals");
+	    $(this).data('beforeName', $(children[0]).html());
+	  }
+	  $(this).data('id', cellId);
+	}).on('blur keyup paste input', '[contenteditable]', function () {
+
+	  var newValue = $(this).html();
+	  if (_typeof($(this).data("beforeName") === 'undefined')) {
+	    var updateFood = { food: { name: newValue, calories: $(this).data("beforeCalories") } };
+	  } else {
+	    updateFood = { food: { name: $(this).data("beforeName"), calories: newValue } };
+	  }
+	  var foodId = $(this).data('id');
+	  fetch('https://quantified-self-api-data.herokuapp.com/api/v1/foods/' + foodId, {
+	    method: 'PATCH',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(updateFood)
+	  });
+	});
+
+	//filter the foods
+	$(document).ready(function () {
+	  $("#filter-box").on("keyup", function () {
+	    var value = $(this).val().toLowerCase();
+	    $("#food-table .row").filter(function () {
+	      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+	    });
+	  });
 	});
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(3);
+	var content = __webpack_require__(2);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(5)(content, {});
+	var update = __webpack_require__(4)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -117,21 +180,21 @@
 	}
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(4)();
+	exports = module.exports = __webpack_require__(3)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".food-form {\n  display: flex;\n  flex-direction: column;\n  width: 14%; }\n\n#food-btn {\n  width: 40%; }\n\n#table-container {\n  margin-top: 3%; }\n\n#food-table {\n  border-style: solid; }\n\nth {\n  border-style: solid;\n  background-color: blanchedalmond; }\n", ""]);
+	exports.push([module.id, ".food-form {\n  display: flex;\n  flex-direction: column;\n  width: 14%; }\n\n#food-btn {\n  width: 40%; }\n\n#table-container {\n  margin-top: 3%; }\n\n.row {\n  display: flex;\n  flex-direction: row; }\n\n.row-name {\n  width: 15%; }\n\n.row-cals {\n  width: 6%;\n  text-align: center; }\n\n.row-name, .row-cals {\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px; }\n\n#table-header {\n  display: flex;\n  flex-direction: row;\n  width: 15%; }\n\n#head-name {\n  width: 15%; }\n\n#head-cal {\n  width: 6%; }\n\n#head-name, #head-cal {\n  text-align: center;\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px;\n  background-color: #dbdbdb; }\n", ""]);
 
 	// exports
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 	/*
@@ -187,7 +250,7 @@
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -439,7 +502,47 @@
 
 
 /***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(6);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(4)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss", function() {
+				var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(3)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".meal-row {\n  display: flex;\n  flex-direction: row; }\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
