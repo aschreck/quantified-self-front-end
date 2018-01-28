@@ -13,7 +13,7 @@
 }
 
 .d-head-name {
-  width: 22%;
+  width: 24%;
 }
 
 .d-head-cals {
@@ -26,4 +26,32 @@
   border-width:  1px;
   padding: 4px;
   background-color: rgb(219, 219, 219);
+  font-family: palatino;
+  font-size: small;
+}
+
+#btm-totals {
+  display: flex;
+  flex-direction: row;
+}
+
+#btm-total-l {
+  display: flex;
+  flex-direction: column;
+}
+
+#d-add-food-btn {
+  width: 21%;
+}
+
+#btm-total-l, #btm-total-r {
+  width: 38%;
+}
+
+.meal-btn {
+  margin: 13px;
+  padding: 5px;
+  width: 19%;
+  background-color: cyan;
+  border-radius: 25px;
 }

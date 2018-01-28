@@ -12,13 +12,17 @@
   margin-top: 3%;
 }
 
+.meal-row {
+  width: 75%;
+}
+
 .row {
   display: flex;
   flex-direction: row;
 }
 
 .row-name {
-  width: 15%;
+  width: 20%;
 }
 
 .row-cals {

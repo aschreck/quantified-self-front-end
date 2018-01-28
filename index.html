@@ -76,9 +76,43 @@
     </div>
   </div>
 
-  <div id='foods-totals'>
-
-
+  <div id='btm-totals'>
+    <div id='btm-total-l'>
+      Foods
+      <button id='d-add-food-btn' class='meal-btn'>Create New</button>
+      <div id='meal-buttons'>
+        Add selected to:
+        <div class='meal-btn-row'>
+          <button class='meal-btn'>Breakfast</button>
+          <button class='meal-btn'>Lunch</button>
+        </div>
+        <div class='meal-btn-row'>
+          <button class='meal-btn'>Dinner</button>
+          <button class='meal-btn'>Snack</button>
+        </div>
+        Search by name:
+        <input type='text' id='d-search-box'>
+        <div class='row'>
+          <div class='d-head-name'>Name</div>
+          <div class='d-head-cals'>Calories</div>
+        </div>
+        <div id=food-suggestions></div>
+      </div>
+    </div>
+    <div id='btm-total-r'>
+      <div class='row'>
+        <div class='d-head-name'>Goal Calories</div>
+        <div id='total-cals' class='d-head-cals'>0</div>
+      </div>
+      <div class='row'>
+        <div class='d-head-name'>Calories Consumed</div>
+        <div id='total-cals' class='d-head-cals'>0</div>
+      </div>
+      <div class='row'>
+        <div class='d-head-name'>Remaining Calories</div>
+        <div id='total-cals' class='d-head-cals'>0</div>
+      </div>
+    </div>
   </div>
 
   <script src="main.bundle.js"></script>
