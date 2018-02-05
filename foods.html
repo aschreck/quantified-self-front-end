@@ -12,8 +12,8 @@
   <div id='container'>
     <div class='food-form'>
       <form>
-        <div id='txt-header' class='food-txt'>Add New Food</div></br>
-        <span class='food-txt'>Name:</span></br>
+        <div class='food-txt txt-header'>Add New Food</div></br>
+        <span class='food-txt' >Name:</span></br>
         <input type='text' name='food-name'></br>
         <span class='food-txt'>Calories:</span></br>
         <input type='text' name='food-cal'></br>
@@ -22,11 +22,13 @@
     </div></br>
 
     <div id='table-container'>
-      Filter:
+      <div id='food-search'>
+       <span class='food-txt txt-header'>Filter:</span></br>
       <input id='filter-box' type='text'>
+    </div>
       <div class='row'>
-        <div id='head-name'>Name</div>
-        <div id='head-cal'>Calories</div>
+        <div id='head-name' class='food-txt'>Name</div>
+        <div id='head-cal' class='food-txt'>Calories</div>
       </div>
       <div id='food-table'>
       </div></br>
