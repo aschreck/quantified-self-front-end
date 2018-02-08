@@ -116,3 +116,15 @@
   padding-top: 2%;
   border-style: outset;
 }
+
+#head-cal {
+  width: 6%;
+}
+
+#head-name, #head-cal {
+  text-align: center;
+  border: solid #000;
+  border-width:  1px;
+  padding: 4px;
+  background-color: rgb(219, 219, 219);
+}
