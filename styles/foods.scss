@@ -1,15 +1,35 @@
+#container {
+  display: flex;
+  flex-direction: row;
+}
+
+#table-container {
+  width: 100%;
+}
+
 .food-form {
   display: flex;
   flex-direction: column;
   width: 14%;
+  height: 200px;
+  margin-left: 8%;
+  margin-top: 4%;
+  margin-right: 8%;
+  background-color: indigo;
+  text-align: center;
+  border-style: outset;
+  padding-top: 2%;
+  padding-right: 4%;
+  padding-left: 4%;
+  padding-bottom: 4%;
 }
 
 #food-btn{
-  width: 40%;
+  width: 60%;
 }
 
 #table-container{
-  margin-top: 3%;
+  margin-top: 4%;
 }
 
 .meal-row {
@@ -26,7 +46,7 @@
 }
 
 .row-cals {
-  width: 6%;
+  width: 11%;
   text-align: center;
 }
 
@@ -43,11 +63,11 @@
 }
 
 #head-name {
-  width: 15%;
+  width: 20%;
 }
 
 #head-cal {
-  width: 6%;
+  width: 11%;
 }
 
 #head-name, #head-cal {
@@ -55,5 +75,44 @@
   border: solid #000;
   border-width:  1px;
   padding: 4px;
-  background-color: rgb(219, 219, 219);
+  background-color: indigo;
+}
+
+#filter-box {
+  width: 40%;
+}
+.navbar {
+  background-color: indigo;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-left: 15px;
+  margin-top: -9px;
+  margin-left: -9px;
+  margin-right: -9px;
+  color: white;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-weight: 500;
+  font-size: x-large;
+}
+
+.food-txt {
+  color: white;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-weight: 500;
+  // font-size: large;
+}
+
+.txt-header {
+  margin-bottom: 1%;
+  font-size: large;
+}
+
+#food-search {
+  text-align: center;
+  width: 33%;
+  background-color: indigo;
+  margin-bottom: 4%;
+  padding-bottom: 4%;
+  padding-top: 2%;
+  border-style: outset;
 }

@@ -5,26 +5,36 @@
   <title>Quantified Self - Manage Foods</title>
 </head>
 <body>
-  <div class='food-form'>
-    <form >
-      Name:
-      <input type='text' name='food-name'>
-      Calories:
-      <input type='text' name='food-cal'>
-      <button id='food-btn'>Add Food</button>
-    </form>
-  </div></br>
 
-  Filter:
-  <input id='filter-box' type='text'>
-  <div class='row'>
-    <div id='head-name'>Name</div>
-    <div id='head-cal'>Calories</div>
+  <div class='navbar'>
+    Quantified Self
   </div>
-  <div id='food-table'>
-  </div></br>
+  <div id='container'>
+    <div class='food-form'>
+      <form>
+        <div class='food-txt txt-header'>Add New Food</div></br>
+        <span class='food-txt' >Name:</span></br>
+        <input type='text' name='food-name'></br>
+        <span class='food-txt'>Calories:</span></br>
+        <input type='text' name='food-cal'></br>
+        <button id='food-btn'>Add Food</button>
+      </form>
+    </div></br>
 
+    <div id='table-container'>
+      <div id='food-search'>
+       <span class='food-txt txt-header'>Filter Foods:</span></br>
+      <input id='filter-box' type='text'>
+    </div>
+      <div class='row'>
+        <div id='head-name' class='food-txt'>Name</div>
+        <div id='head-cal' class='food-txt'>Calories</div>
+      </div>
+      <div id='food-table'>
+      </div></br>
+    </div>
 
+  </div>
 
   <script src="main.bundle.js"></script>
 </body>
