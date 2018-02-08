@@ -46,503 +46,21 @@
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-	__webpack_require__(1);
-	__webpack_require__(5);
 	var $;
-	$ = __webpack_require__(7);
+	$ = __webpack_require__(1);
 	var foodIds = {};
-
-	//Populate list with all stored foods on page load
+	var diaryLoad = __webpack_require__(2);
+	var foodLoad = __webpack_require__(3);
+	__webpack_require__(4);
+	__webpack_require__(8);
 
 	$(document).ready(function () {
-	  fetch("https://quantified-self-api-data.herokuapp.com/api/v1/foods").then(function (response) {
-	    return response.json();
-	  }).then(function (data) {
-	    data.forEach(function (food) {
-	      foodIds[food.name] = food.id;
-	      $("#food-table").prepend("<div class='row'>" + ('<div class="row-name" contentEditable=\'true\'>' + food.name + '</div>') + ('<div class="row-cals" contentEditable=\'true\'>' + food.calories + '</div>') + '<div><button>-</button></div>' + "</div>");
-	    });
-	  });
-	});
-
-	//Add new food
-
-	$("#food-btn").on("click", function (e) {
-	  e.preventDefault();
-	  var name = $("input[name='food-name']").val();
-	  var calories = $("input[name='food-cal']").val();
-	  var tableRef = document.getElementById('food-table').getElementsByTagName('tbody')[0];
-
-	  if (name === '') {
-	    alert("Please enter a food name.");
-	  } else if (calories === '') {
-	    alert("Please enter a calorie amount.");
-	  } else {
-	    $("#food-table").prepend("<div class='row'>" + ('<div class="row-name" contentEditable=\'true\'>' + name + '</div>') + ('<div class=\'row-cals\' contentEditable=\'true\'>' + calories + '</div>') + '<div><button>-</button></div>' + "</div>");
-	    $("input[name='food-name']").val('');
-	    $("input[name='food-cal']").val('');
-	  }
-
-	  var newFood = { food: { name: name, calories: calories } };
-	  fetch("https://quantified-self-api-data.herokuapp.com/api/v1/foods", {
-	    method: 'post',
-	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(newFood) }).then(function (response) {
-	    return response.json();
-	  }).then(function (foodInfo) {
-	    foodIds[foodInfo.name] = foodInfo.id;
-	  });
-	});
-
-	//Delete Foods
-
-	$("#food-table").on("click", function (e) {
-	  var food = $(e.target).parent().parent()[0];
-	  var name = $(food).find("div.row-name").html();
-	  var foodId = foodIds[name];
-	  if ($(e.target).is(":button")) {
-	    $(e.target).closest(food).remove();
-	    fetch('https://quantified-self-api-data.herokuapp.com/api/v1/foods/' + foodId, {
-	      method: 'delete',
-	      headers: { 'Content-Type': 'application/json' }
-	    });
-	  }
-	});
-
-	//Edit foods
-
-	$('#food-table').on('focus', '[contenteditable]', function (e) {
-	  var beforeValue = $(this).html();
-	  var cellId = foodIds[beforeValue];
-	  var parent = $(this).parent()[0];
-	  var children = $(parent).find('TD');
-
-	  if (beforeValue = $(children[0]).html()) {
-	    $(this).data('inputType', "name");
-	    $(this).data('beforeCalories', $(children[1]).html());
-	  } else {
-	    $(this).data('inputType', "cals");
-	    $(this).data('beforeName', $(children[0]).html());
-	  }
-	  $(this).data('id', cellId);
-	}).on('blur keyup paste input', '[contenteditable]', function () {
-
-	  var newValue = $(this).html();
-	  if (_typeof($(this).data("beforeName") === 'undefined')) {
-	    var updateFood = { food: { name: newValue, calories: $(this).data("beforeCalories") } };
-	  } else {
-	    updateFood = { food: { name: $(this).data("beforeName"), calories: newValue } };
-	  }
-	  var foodId = $(this).data('id');
-	  fetch('https://quantified-self-api-data.herokuapp.com/api/v1/foods/' + foodId, {
-	    method: 'PATCH',
-	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(updateFood)
-	  });
-	});
-
-	//filter the foods
-	$(document).ready(function () {
-	  $("#filter-box").on("keyup", function () {
-	    var value = $(this).val().toLowerCase();
-	    $("#food-table .row").filter(function () {
-	      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-	    });
-	  });
+	  diaryLoad();
+	  foodLoad();
 	});
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(2);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./foods.scss", function() {
-				var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./foods.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(3)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".food-form {\n  display: flex;\n  flex-direction: column;\n  width: 14%; }\n\n#food-btn {\n  width: 40%; }\n\n#table-container {\n  margin-top: 3%; }\n\n.row {\n  display: flex;\n  flex-direction: row; }\n\n.row-name {\n  width: 15%; }\n\n.row-cals {\n  width: 6%;\n  text-align: center; }\n\n.row-name, .row-cals {\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px; }\n\n#table-header {\n  display: flex;\n  flex-direction: row;\n  width: 15%; }\n\n#head-name {\n  width: 15%; }\n\n#head-cal {\n  width: 6%; }\n\n#head-name, #head-cal {\n  text-align: center;\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px;\n  background-color: #dbdbdb; }\n", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(6);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss", function() {
-				var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(3)();
-	// imports
-
-
-	// module
-	exports.push([module.id, ".meal-row {\n  display: flex;\n  flex-direction: row; }\n", ""]);
-
-	// exports
-
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10909,6 +10427,704 @@
 
 	return jQuery;
 	} );
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var $;
+	$ = __webpack_require__(1);
+	var foodIds = {};
+
+	function diaryLoad() {
+	  getFoods();
+	  addFoodsToMeals();
+	  deleteFoodFromMeal();
+	  getSavedMealFoods();
+	  addCalTotalListeners();
+	  updateRemainingCals();
+	  updateTotalCals();
+	}
+
+	function getFoods() {
+	  fetch("https://qs-api-node.herokuapp.com/api/v1/foods").then(function (response) {
+	    return response.json();
+	  }).then(function (data) {
+	    data.forEach(function (food) {
+	      foodIds[food.name] = food.id;
+	      $("#food-suggestions").prepend("<div class='row'>" + ("<div class=\"d-row-name\" contentEditable='true'>" + food.name + "</div>") + ("<div class=\"d-row-cals\" contentEditable='true'>" + food.calories + "</div>") + "<input type='checkbox'>" + "</div>");
+	    });
+	  });
+	}
+
+	function addFoodsToMeals() {
+	  var buttons = $("#meal-buttons").find(".meal-btn").each(function () {
+	    var _this = this;
+
+	    $(this).on("click", function (e) {
+	      addFoodsToMeal(_this);
+	      uncheckBoxes();
+	    });
+	  });
+	}
+
+	function addFoodsToMeal(mealObj) {
+	  var meal = mealObj.innerText.toLowerCase();
+	  var checkedFoods = checkBoxesChecked();
+	  var targetMeal = $("#" + meal).find(".meal-foods");
+	  var targetMealId = targetMeal.parent()[0].dataset.mealId;
+	  $(checkedFoods).each(function (index) {
+	    var foodId = foodIds[this[0]];
+	    addFoodToMeal(this, targetMeal, targetMealId, foodId);
+	  });
+	}
+
+	function addFoodToMeal(mealObj, targetMeal, targetMealId, foodId) {
+	  fetch("https://qs-api-node.herokuapp.com/api/v1/meals/" + targetMealId + "/foods/" + foodId, {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' }
+	  });
+	  targetMeal.append("<div class='row'>" + ("<div class='d-row-name'>" + mealObj[0] + "</div>") + ("<div class='d-row-cals'>" + mealObj[1] + "</div>") + "<div><button>-</button></div>" + "</div>");
+	}
+
+	function uncheckBoxes() {
+	  $("input[type='checkbox']").each(function () {
+	    if ($(this).is(":checked")) {
+	      $(this).prop('checked', false);
+	    }
+	  });
+	}
+
+	var checkBoxesChecked = function checkBoxesChecked() {
+	  var allFoods = $("#food-suggestions").find(".row");
+	  var checkedFoods = $(allFoods).filter(function () {
+	    var check = $(this).find("input[type='checkbox']");
+	    if (check.is(":checked")) {
+	      return true;
+	    } else {
+	      return false;
+	    }
+	  });
+	  var foodDetails = checkedFoods.map(function (x) {
+	    return [this.innerText.split(/\n/).slice(0, 2)];
+	  });
+	  return foodDetails;
+	};
+
+	function deleteFoodFromMeal() {
+	  $(document).find(".meal").on("click", function (e) {
+	    if ($(e.target).is(":button")) {
+	      var row = $(e.target).parent().parent();
+	      var name = $(row).find(".d-row-name")[0].innerText;
+	      var foodId = foodIds[name];
+	      var mealId = parseInt($(row).parent().parent()[0].dataset.mealId);
+	      fetch("https://qs-api-node.herokuapp.com/api/v1/meals/" + mealId + "/foods/" + foodId, {
+	        method: 'delete',
+	        headers: { 'Content-Type': 'application/json' }
+	      });
+	      row.remove();
+	    }
+	  });
+	}
+
+	function getSavedMealFoods() {
+	  fetch("https://qs-api-node.herokuapp.com/api/v1/meals/").then(function (response) {
+	    return response.json();
+	  }).then(function (response) {
+	    response.forEach(function (meal) {
+	      appendAllMealFoods(meal);
+	    });
+	  });
+	}
+
+	function appendAllMealFoods(meal) {
+	  meal.foods.forEach(function (food) {
+	    $("div[data-meal-id=\"" + meal.id + "\"]").find(".meal-foods").append("<div class='row'>" + ("<div class='d-row-name'>" + food.name + "</div>") + ("<div class='d-row-cals'>" + food.calories + "</div>") + "<div><button>-</button></div>" + "</div>");
+	  });
+	}
+
+	function addCalTotalListeners() {
+	  $(".meal-foods").each(function () {
+	    $(this).on("DOMSubtreeModified", function () {
+	      var totalCalories = 0;
+	      $(this).find(".d-row-cals").each(function () {
+	        totalCalories += parseInt(this.innerText);
+	      });
+	      var mealTable = $(this).parent()[0];
+	      $(mealTable).find("#total-cals").text(totalCalories);
+	    });
+	  });
+	}
+
+	function updateRemainingCals() {
+	  $(".meal").each(function () {
+	    var remainingCals = $(this).find('#remaining-cals');
+	    $(this).find("#total-cals").on("DOMSubtreeModified", function () {
+	      var goal = parseInt(remainingCals[0].dataset.goal);
+	      var actual = this.textContent;
+	      var remainingNumber = goal - actual;
+	      remainingCals.text(remainingNumber);
+	      turnRedOrGreen(remainingCals, remainingNumber);
+	    });
+	  });
+	}
+
+	function updateTotalCals() {
+	  $(".meal-cals-total").each(function () {
+	    $(this).on("DOMSubtreeModified", function () {
+	      var actual = 0;
+	      $(".meal-cals-total").each(function () {
+	        actual += parseInt(this.textContent);
+	      });
+	      $("#calories-consumed").text(actual);
+	      var remainingCalories = $("#remaining-calories");
+	      var calGoal = parseInt(remainingCalories[0].dataset.goal);
+	      var difference = calGoal - actual;
+	      remainingCalories.text(difference);
+	      turnRedOrGreen(remainingCalories, difference);
+	    });
+	  });
+	}
+
+	function turnRedOrGreen(calsObj, calsDifference) {
+	  if (calsDifference > 0) {
+	    calsObj.removeClass("red");
+	    calsObj.addClass('green');
+	  } else {
+	    calsObj.removeClass("green");
+	    calsObj.addClass('red');
+	  }
+	}
+	module.exports = diaryLoad;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var $;
+	$ = __webpack_require__(1);
+	var foodIds = {};
+
+	function foodLoad() {
+	  addExistingFoods();
+	  addNewFood();
+	  deleteFood();
+	  editFood();
+	  filterFoods();
+	}
+
+	function addExistingFoods() {
+	  fetch("https://qs-api-node.herokuapp.com/api/v1/foods").then(function (response) {
+	    return response.json();
+	  }).then(function (data) {
+	    data.forEach(function (food) {
+	      foodIds[food.name] = food.id;
+	      $("#food-table").prepend("<div class='row'>" + ("<div class=\"row-name\" contentEditable='true'>" + food.name + "</div>") + ("<div class=\"row-cals\" contentEditable='true'>" + food.calories + "</div>") + "<div><button>-</button></div>" + "</div>");
+	    });
+	  });
+	}
+
+	function addNewFood() {
+	  $("#food-btn").on("click", function (e) {
+	    e.preventDefault();
+
+	    var name = $("input[name='food-name']").val();
+	    var calories = $("input[name='food-cal']").val();
+
+	    verifyNewFood(name, calories);
+
+	    createNewFood(name, calories);
+	  });
+	}
+
+	function verifyNewFood(name, calories) {
+	  if (name === '') {
+	    alert("Please enter a food name.");
+	  } else if (calories === '') {
+	    alert("Please enter a calorie amount.");
+	  } else {
+	    renderNewFood(name, calories);
+	    $("input[name='food-name']").val('');
+	    $("input[name='food-cal']").val('');
+	  }
+	}
+
+	function renderNewFood(name, calories) {
+	  $("#food-table").prepend("<div class='row'>" + ("<div class=\"row-name\" contentEditable='true'>" + name + "</div>") + ("<div class='row-cals' contentEditable='true'>" + calories + "</div>") + "<div><button>-</button></div>" + "</div>");
+	}
+
+	function createNewFood(name, calories) {
+	  var newFood = { food: { name: name, calories: calories } };
+	  fetch("https://qs-api-node.herokuapp.com/api/v1/foods", {
+	    method: 'post',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(newFood)
+	  }).then(function (response) {
+	    return response.json();
+	  }).then(function (foodInfo) {
+	    foodIds[foodInfo.name] = foodInfo.id;
+	  });
+	}
+	//Delete Foods
+
+	function deleteFood() {
+	  $("#food-table").on("click", function (e) {
+	    var food = $(e.target).parent().parent()[0];
+	    var name = $(food).find("div.row-name").html();
+	    var foodId = foodIds[name];
+	    if ($(e.target).is(":button")) {
+	      $(e.target).closest(food).remove();
+	      fetch("https://qs-api-node.herokuapp.com/api/v1/foods/" + foodId, {
+	        method: 'delete',
+	        headers: { 'Content-Type': 'application/json' }
+	      });
+	    }
+	  });
+	}
+
+	//Edit foods
+	function editFood() {
+	  $('#food-table').on('focus', '[contenteditable]', function (e) {
+	    if (isNaN($(this).html()) == false) {
+	      var foodName = $(this).parent().find(".row-name").text();
+	    }
+
+	    var beforeValue = $(this).html();
+	    var cellId = foodIds[beforeValue] || foodIds[foodName];
+	    var parent = $(this).parent()[0];
+	    var children = $(parent).find('div');
+
+	    if (isNaN(beforeValue)) {
+	      $(this).data('inputType', "name");
+	      $(this).data('beforeCalories', $(children[1]).html());
+	    } else {
+	      $(this).data('inputType', "cals");
+	      $(this).data('beforeName', $(children[0]).html());
+	    }
+	    $(this).data('id', cellId);
+	  }).on('blur keyup paste input', '[contenteditable]', function () {
+	    var newValue = $(this).html();
+	    // if (typeof ($(this).data("beforeName") === 'undefined')) {
+	    if (isNaN(newValue)) {
+	      var updateFood = { food: { name: newValue, calories: $(this).data("beforeCalories") } };
+	    } else {
+	      var updateFood = { food: { name: $(this).data("beforeName"), calories: newValue } };
+	    }
+	    var foodId = $(this).data('id');
+	    fetch("https://qs-api-node.herokuapp.com/api/v1/foods/" + foodId, {
+	      method: 'PATCH',
+	      headers: { 'Content-Type': 'application/json' },
+	      body: JSON.stringify(updateFood)
+	    });
+	  });
+	}
+
+	//filter the foods
+	function filterFoods() {
+	  $(document).ready(function () {
+	    $("#filter-box").on("keyup", function () {
+	      var value = $(this).val().toLowerCase();
+	      $("#food-table .row").filter(function () {
+	        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+	      });
+	    });
+	  });
+	}
+
+	// export * from './food'
+	module.exports = foodLoad;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(5);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(7)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss", function() {
+				var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./diary.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(6)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "body {\n  background-color: #FFFFF0; }\n\n#d-meals-container {\n  width: 100%; }\n\n.meal-row {\n  display: flex;\n  flex-direction: row;\n  height: 300px; }\n\n.meal {\n  width: 50%; }\n\n.d-head-name {\n  width: 24%; }\n\n.d-head-cals {\n  width: 15%; }\n\n.d-head-name, .d-head-cals {\n  text-align: center;\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px;\n  background-color: indigo;\n  font-family: palatino;\n  font-size: small; }\n\n#btm-totals {\n  display: flex;\n  flex-direction: row; }\n\n#btm-total-l {\n  display: flex;\n  flex-direction: column; }\n\n#d-add-food-btn {\n  width: 21%; }\n\n#btm-total-l, #btm-total-r {\n  width: 38%; }\n\n.meal-btn {\n  margin: 13px;\n  padding: 5px;\n  width: 19%;\n  background-color: cyan;\n  border-radius: 25px; }\n\n.d-row-name {\n  width: 24%; }\n\n.d-row-cals {\n  width: 15%; }\n\n.d-row-name, .d-row-cals {\n  text-align: center;\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px; }\n\n.green {\n  color: green;\n  font-weight: 500;\n  font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif; }\n\n.red {\n  color: red;\n  font-weight: 500;\n  font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif; }\n", ""]);
+
+	// exports
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(9);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(7)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./foods.scss", function() {
+				var newContent = require("!!../node_modules/css-loader/index.js!../node_modules/sass-loader/index.js!./foods.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(6)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "#container {\n  display: flex;\n  flex-direction: row; }\n\n#table-container {\n  width: 100%; }\n\n.food-form {\n  display: flex;\n  flex-direction: column;\n  width: 14%;\n  height: 200px;\n  margin-left: 8%;\n  margin-top: 4%;\n  margin-right: 8%;\n  background-color: indigo;\n  text-align: center;\n  border-style: outset;\n  padding-top: 2%;\n  padding-right: 4%;\n  padding-left: 4%;\n  padding-bottom: 4%; }\n\n#food-btn {\n  width: 60%; }\n\n#table-container {\n  margin-top: 4%; }\n\n.meal-row {\n  width: 75%; }\n\n.row {\n  display: flex;\n  flex-direction: row; }\n\n.row-name {\n  width: 20%; }\n\n.row-cals {\n  width: 11%;\n  text-align: center; }\n\n.row-name, .row-cals {\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px; }\n\n#table-header {\n  display: flex;\n  flex-direction: row;\n  width: 15%; }\n\n#head-name {\n  width: 20%; }\n\n#head-cal {\n  width: 11%; }\n\n#head-name, #head-cal {\n  text-align: center;\n  border: solid #000;\n  border-width: 1px;\n  padding: 4px;\n  background-color: indigo; }\n\n#filter-box {\n  width: 40%; }\n\n.navbar {\n  background-color: indigo;\n  padding-top: 30px;\n  padding-bottom: 30px;\n  padding-left: 15px;\n  margin-top: -9px;\n  margin-left: -9px;\n  margin-right: -9px;\n  color: white;\n  font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif;\n  font-weight: 500;\n  font-size: x-large; }\n\n.food-txt {\n  color: white;\n  font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", sans-serif;\n  font-weight: 500; }\n\n.txt-header {\n  margin-bottom: 1%;\n  font-size: large; }\n\n#food-search {\n  text-align: center;\n  width: 33%;\n  background-color: indigo;\n  margin-bottom: 4%;\n  padding-bottom: 4%;\n  padding-top: 2%;\n  border-style: outset; }\n", ""]);
+
+	// exports
 
 
 /***/ })
